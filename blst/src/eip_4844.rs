@@ -132,7 +132,9 @@ fn kzg_settings_to_c(rust_settings: &FsKZGSettings) -> CKZGSettings {
         roots_of_unity: unsafe { (*Box::into_raw(roots_of_unity)).as_mut_ptr() },
         g1_values: unsafe { (*v).as_mut_ptr() },
         g2_values: stat_ref.as_mut_ptr(),
-    }
+    //     expanded_roots_of_unity: ,
+    //     reverse_roots_of_unity: 
+        }
 }
 
 unsafe fn deserialize_blob(blob: *const Blob) -> Result<Vec<FsFr>, C_KZG_RET> {

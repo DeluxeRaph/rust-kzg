@@ -80,4 +80,15 @@ impl G1Fp for FsFp {
             blst::blst_fp_add(&mut self.0, &self.0, &b.0);
         }
     }
+
+    // @note Added these so it would compile
+
+    fn to_limbs(&self) -> [u64; 6] {
+        todo!()
+    }
+
+    fn from_bytes_le(bytes: &[u8; 48]) -> Self {
+        todo!()
+    }
+
 }

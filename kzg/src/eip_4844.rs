@@ -38,6 +38,16 @@ pub const BYTES_PER_FIELD_ELEMENT: usize = 32;
 pub const BYTES_PER_PROOF: usize = 48;
 pub const BYTES_PER_COMMITMENT: usize = 48;
 
+// New Das variables
+// The number of field elements in an extended blob
+pub const FIELD_ELEMENTS_PER_EXT_BLOB: usize = FIELD_ELEMENTS_PER_BLOB * 2;
+// The number of field elements in a cell.
+pub const FIELD_ELEMENTS_PER_CELL: usize = 64;
+// The number of cells in an extended blob.
+pub const CELLS_PER_EXT_BLOB: usize = FIELD_ELEMENTS_PER_EXT_BLOB / FIELD_ELEMENTS_PER_CELL;
+// The number of bytes in a single cell.
+pub const BYTES_PER_CELL: usize = FIELD_ELEMENTS_PER_CELL * BYTES_PER_FIELD_ELEMENT;
+
 pub const TRUSTED_SETUP_PATH: &str = "src/trusted_setup.txt";
 
 // Currently, we only support fixed amount of G1 and G2 points contained in trusted setups.
@@ -60,6 +70,9 @@ pub const RANDOM_CHALLENGE_KZG_BATCH_DOMAIN: [u8; 16] = [
 ////////////////////////////// C API for EIP-4844 //////////////////////////////
 
 pub type C_KZG_RET = c_uint;
+
+// New
+pub type limb_t = u64;
 
 pub const C_KZG_RET_OK: C_KZG_RET = 0;
 pub const C_KZG_RET_BADARGS: C_KZG_RET = 1;
@@ -97,11 +110,45 @@ pub struct KZGProof {
 }
 
 #[repr(C)]
+pub struct Cell {
+    pub bytes: [u8; BYTES_PER_CELL],
+}
+
+// new
+#[repr(C)]
+pub struct blst_fp {
+    pub l: [limb_t; 6usize],
+}
+
+// new
+#[repr(C)]
+pub struct blst_p1_to_affine {
+    pub x: blst_fp,
+    pub y: blst_fp,
+}
+
+#[repr(C)]
 pub struct CKZGSettings {
     pub max_width: u64,
     pub roots_of_unity: *mut blst_fr,
     pub g1_values: *mut blst_p1,
     pub g2_values: *mut blst_p2,
+    // // The expanded roots of unity
+    // pub expanded_roots_of_unity: *mut blst_fr,
+    // // The bit-reversal permuted roots of unity.
+    // pub reverse_roots_of_unity: *mut blst_fr,
+    // // G1 group elements from the trusted setup, in Lagrange form bit-reversal permutation.
+    // pub g1_values_lagrange_brp: *mut blst_p1,
+    // // G1 group elements from the trusted setup, in monomial form.
+    // pub g1_values_monomial: *mut blst_fr,
+    // // G2 group elements from the trusted setup, in monomial form.
+    // pub g2_values_monomial: *mut blst_p2,
+    // // Data used during FK20 proof generation.
+    // pub x_ext_fft_files: *mut blst_p1,
+    // // Data used during FK20 proof generation.
+    // pub x_ext_fft_columns: *mut blst_p1,
+    // // The precomputed tables for fixed-base MSM
+    // pub tables: *mut blst_p1_to_affine,
 }
 
 pub struct PrecomputationTableManager<TFr, TG1, TG1Fp, TG1Affine>
