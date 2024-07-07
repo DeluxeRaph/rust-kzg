@@ -127,6 +127,7 @@ pub struct blst_p1_to_affine {
     pub y: blst_fp,
 }
 
+
 #[repr(C)]
 pub struct CKZGSettings {
     pub max_width: u64,
@@ -140,7 +141,7 @@ pub struct CKZGSettings {
     // // G1 group elements from the trusted setup, in Lagrange form bit-reversal permutation.
     // pub g1_values_lagrange_brp: *mut blst_p1,
     // // G1 group elements from the trusted setup, in monomial form.
-    // pub g1_values_monomial: *mut blst_fr,
+    // pub g1_values_monomial: *mut blst_p1,
     // // G2 group elements from the trusted setup, in monomial form.
     // pub g2_values_monomial: *mut blst_p2,
     // // Data used during FK20 proof generation.

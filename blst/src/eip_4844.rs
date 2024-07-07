@@ -102,6 +102,8 @@ fn kzg_settings_to_rust(c_settings: &CKZGSettings) -> Result<FsKZGSettings, Stri
     })
 }
 
+// Why do we need to convert the KZGsettings to work with C?
+// Do we send this into blst?
 fn kzg_settings_to_c(rust_settings: &FsKZGSettings) -> CKZGSettings {
     let g1_val = rust_settings
         .secret_g1
@@ -127,13 +129,34 @@ fn kzg_settings_to_c(rust_settings: &FsKZGSettings) -> CKZGSettings {
             .collect::<Vec<blst_fr>>(),
     );
 
+    // Convert expanded_roots_of_unity to a Vec of blst_fr, then box it
+    let expanded_roots_of_unity = Box::new(
+        rust_settings
+            .fs
+            .expanded_roots_of_unity
+            .iter()
+            .map(|r| r.0)
+            .collect::<Vec<blst_fr>>(),
+    );
+
+    // Convert reverse_roots_of_unity to a Vec of blst_fr, then box it
+    let reverse_roots_of_unity = Box::new(
+        rust_settings
+            .fs
+            .reverse_roots_of_unity
+            .iter()
+            .map(|r| r.0)
+            .collect::<Vec<blst_fr>>(),
+    );
+
     CKZGSettings {
         max_width: rust_settings.fs.max_width as u64,
         roots_of_unity: unsafe { (*Box::into_raw(roots_of_unity)).as_mut_ptr() },
         g1_values: unsafe { (*v).as_mut_ptr() },
         g2_values: stat_ref.as_mut_ptr(),
-    //     expanded_roots_of_unity: ,
-    //     reverse_roots_of_unity: 
+        // expanded_roots_of_unity: unsafe { (*Box::into_raw(expanded_roots_of_unity)).as_mut_ptr() },
+        // reverse_roots_of_unity: unsafe { (*Box::into_raw(reverse_roots_of_unity)).as_mut_ptr() },
+        // // How do i implement g1_values_monomial
         }
 }
 
